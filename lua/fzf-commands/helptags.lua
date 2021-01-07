@@ -77,26 +77,28 @@ local fzf_function = function (cb)
     -- cb(nil)
   end
 
-return coroutine.wrap(function (opts)
+return function()
+  coroutine.wrap(function (opts)
 
-    opts = utils.normalize_opts(opts)
-    local result = opts.fzf(fzf_function, "--nth 1 --ansi --expect=ctrl-t,ctrl-s,ctrl-v") 
-    if not result then
-      return
-    end
-    local choice = vim.split(result[2], "\t")[1]
-    local key = result[1]
-    local windowcmd
-    if key == "" or key == "ctrl-s" then
-      windowcmd = ""
-    elseif key == "ctrl-v" then
-      windowcmd = "vertical"
-    elseif key == "ctrl-t" then
-      windowcmd = "tab"
-    else
-      print("Not implemented!")
-      error("Not implemented!")
-    end
+      opts = utils.normalize_opts(opts)
+      local result = opts.fzf(fzf_function, "--nth 1 --ansi --expect=ctrl-t,ctrl-s,ctrl-v") 
+      if not result then
+        return
+      end
+      local choice = vim.split(result[2], "\t")[1]
+      local key = result[1]
+      local windowcmd
+      if key == "" or key == "ctrl-s" then
+        windowcmd = ""
+      elseif key == "ctrl-v" then
+        windowcmd = "vertical"
+      elseif key == "ctrl-t" then
+        windowcmd = "tab"
+      else
+        print("Not implemented!")
+        error("Not implemented!")
+      end
 
-    vim.cmd(string.format("%s h %s", windowcmd, choice))
-end)
+      vim.cmd(string.format("%s h %s", windowcmd, choice))
+  end)()
+end 

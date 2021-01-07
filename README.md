@@ -35,10 +35,23 @@ These as keys of `require("fzf-commands")`. For eg.:
 * Can open files in the same window, in a [vertical] split, or in a new
   tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
 
+![](gifs/files.gif)
+
 `helptags()`: Open neovim help files
 
 * Can open files in the same window, in a [vertical] split, or in a new
   tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
+
+![](gifs/helptags.gif)
+
+`bufferpicker()`: Pick between buffers to switch to them or open in a
+  split.
+
+* Preview the buffers
+* Can open files in the same window, in a [vertical] split, or in a new
+  tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
+
+![](gifs/bufferpicker.gif)
 
 ## Configuration
 
@@ -61,6 +74,7 @@ or
 
 
 ```vim
+" vertical fzf
 lua << EOF
   function my_custom_fzf(contents, options)
     vim.cmd("vnew")
