@@ -29,7 +29,7 @@ noremap <leader>f <cmd>lua require("fzf-commands").files({ fzf = custom_fzf_func
 
 ## Commands
 
-These as keys of `require("fzf-commands")`. For eg.:
+These are keys of `require("fzf-commands")`. For eg.:
 `require('fzf-commands').files()`
 
 `files()`: Open files in the current vim directory
