@@ -5,6 +5,13 @@ A repository for commands using the
 
 This is a work in progress, contributions welcome!
 
+## Table of contents
+
+* [Usage](#usage)
+* [Commands](#commands)
+* [Configuration](#configuration)
+* [Contribution notes](#contribution-notes)
+
 ## Usage
 
 This repository exports lua functions for the user to bind to vim
