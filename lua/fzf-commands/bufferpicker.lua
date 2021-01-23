@@ -41,6 +41,10 @@ return function(options)
         additional_info = additional_info .. "u"
       end
 
+      if #name == 0 then
+        name = "[No Name]"
+      end
+
       table.insert(items, string.format("%s\t%s", bufhandle .. additional_info, name))
     end
 
