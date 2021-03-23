@@ -5,7 +5,11 @@ local term = require "fzf-commands.term"
 local fn, api = utils.helpers()
 
 local function getbufnumber(line)
-  return tonumber(string.match(line, "%[(%d+)%]"))
+  return tonumber(string.match(line, "%[(%d+)"))
+end
+
+local function getfilename(line)
+  return string.match(line, "%[.*%] (.+)")
 end
 
 return function(options)
@@ -17,7 +21,7 @@ return function(options)
       if api.buf_is_loaded(buf) then
         return api.buf_get_lines(buf, 0, fzf_lines, false)
       else
-        local name = vim.split(item, "\t")[2]
+        local name = getfilename(item)
         if fn.filereadable(name) ~= 0 then
           return fn.readfile(name, "", fzf_lines)
         end
@@ -56,7 +60,7 @@ return function(options)
           term.reset .. api.buf_get_var(bufhandle, "term_title")
       end
 
-      local item_string = string.format("[%s]%s %s", term.teal .. tostring(bufhandle) .. term.reset, additional_info, name)
+      local item_string = string.format("[%s] %s", term.teal .. tostring(bufhandle) .. additional_info .. term.reset, name)
 
       table.insert(items, item_string)
       -- table.insert(items, string.format("%s\t%s", bufhandle .. additional_info, name))
