@@ -3,12 +3,13 @@ local utils = require "fzf-commands.utils"
 local fn, api = utils.helpers()
 
 local function getbufnumber(line)
-  return tonumber(string.match(line, "^%d+"))
+  return tonumber(string.match(line, "%[(%d+)%]"))
 end
 
 return function(options)
 
     local act = action(function (items, fzf_lines, cols)
+      -- only preview first item
       local item = items[1]
       local buf = getbufnumber(item)
       if api.buf_is_loaded(buf) then
@@ -31,7 +32,6 @@ return function(options)
 
     for _, bufhandle in ipairs(api.list_bufs()) do
 
-      local name = fn.bufname(bufhandle)
 
       local additional_info = ""
       if api.buf_get_option(bufhandle, "modified") then
@@ -41,11 +41,22 @@ return function(options)
         additional_info = additional_info .. "u"
       end
 
+      local name = fn.bufname(bufhandle)
+
       if #name == 0 then
         name = "[No Name]"
       end
 
-      table.insert(items, string.format("%s\t%s", bufhandle .. additional_info, name))
+      -- for Terminal buffer, cleanup name
+      if api.buf_get_option(bufhandle, "buftype") == "terminal" then
+        -- b:term_title comes from nvim, see 'terminal'
+        name = "Terminal: " .. api.buf_get_var(bufhandle, "term_title")
+      end
+
+      local item_string = string.format("[%d]%s %s", bufhandle, additional_info, name)
+
+      table.insert(items, item_string)
+      -- table.insert(items, string.format("%s\t%s", bufhandle .. additional_info, name))
     end
 
     local lines = options.fzf(items, opts)
