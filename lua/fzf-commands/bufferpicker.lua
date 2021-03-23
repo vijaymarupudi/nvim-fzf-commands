@@ -1,5 +1,7 @@
 local action = require "fzf.actions".action
 local utils = require "fzf-commands.utils"
+local term = require "fzf-commands.term"
+
 local fn, api = utils.helpers()
 
 local function getbufnumber(line)
@@ -25,7 +27,7 @@ return function(options)
 
   coroutine.wrap(function ()
     options = utils.normalize_opts(options)
-    opts = string.format([[--preview=%s]], act)
+    opts = string.format([[--ansi --preview=%s]], act)
     opts = opts .. " --expect=ctrl-t,ctrl-s,ctrl-v"
 
     local items = {}
@@ -50,10 +52,11 @@ return function(options)
       -- for Terminal buffer, cleanup name
       if api.buf_get_option(bufhandle, "buftype") == "terminal" then
         -- b:term_title comes from nvim, see 'terminal'
-        name = "Terminal: " .. api.buf_get_var(bufhandle, "term_title")
+        name = term.teal .. "Term: " ..
+          term.reset .. api.buf_get_var(bufhandle, "term_title")
       end
 
-      local item_string = string.format("[%d]%s %s", bufhandle, additional_info, name)
+      local item_string = string.format("[%s]%s %s", term.teal .. tostring(bufhandle) .. term.reset, additional_info, name)
 
       table.insert(items, item_string)
       -- table.insert(items, string.format("%s\t%s", bufhandle .. additional_info, name))
