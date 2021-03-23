@@ -66,6 +66,8 @@ These are keys of `require("fzf-commands")`. For eg.:
 * Can open files in the same window, in a [vertical] split, or in a new
   tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
 
+![](gifs/manpicker.gif)
+
 ## Configuration
 
 All commands support a custom fzf function that manages opening windows
