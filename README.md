@@ -73,7 +73,18 @@ These are keys of `require("fzf-commands")`. For eg.:
 All commands support a custom fzf function that manages opening windows
 and running fzf.
 
-**Example**
+**Example changing height and width of default window**
+
+This example uses `window_options`, documentation
+[here](https://github.com/vijaymarupudi/nvim-fzf#api-functions)
+
+```lua
+require("fzf-commands").files({ fzf = function(contents, options) 
+  return require("fzf").fzf(contents, options, { height = 10, width = 30 })
+end })
+```
+
+**Other examples**
 
 ```lua
 function my_custom_fzf(contents, options)
