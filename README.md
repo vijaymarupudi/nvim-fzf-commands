@@ -60,6 +60,12 @@ These are keys of `require("fzf-commands")`. For eg.:
 
 ![](gifs/bufferpicker.gif)
 
+
+`manpicker()`: Open a manpage using nvim's `Man`.
+
+* Can open files in the same window, in a [vertical] split, or in a new
+  tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
+
 ## Configuration
 
 All commands support a custom fzf function that manages opening windows
