@@ -38,32 +38,34 @@ return function(options)
 
     for _, bufhandle in ipairs(api.list_bufs()) do
 
+      if api.buf_get_option(bufhandle, "buflisted") == 0 then
+      else
+        local additional_info = ""
+        if api.buf_get_option(bufhandle, "modified") then
+          additional_info = additional_info .. "+"
+        end
+        if not api.buf_is_loaded(bufhandle) then
+          additional_info = additional_info .. "u"
+        end
 
-      local additional_info = ""
-      if api.buf_get_option(bufhandle, "modified") then
-        additional_info = additional_info .. "+"
+        local name = fn.bufname(bufhandle)
+
+        if #name == 0 then
+          name = "[No Name]"
+        end
+
+        -- for Terminal buffer, cleanup name
+        if api.buf_get_option(bufhandle, "buftype") == "terminal" then
+          -- b:term_title comes from nvim, see 'terminal'
+          name = term.teal .. "Term: " ..
+            term.reset .. api.buf_get_var(bufhandle, "term_title")
+        end
+
+        local item_string = string.format("[%s] %s", term.teal .. tostring(bufhandle) .. additional_info .. term.reset, name)
+
+        table.insert(items, item_string)
+        -- table.insert(items, string.format("%s\t%s", bufhandle .. additional_info, name))
       end
-      if not api.buf_is_loaded(bufhandle) then
-        additional_info = additional_info .. "u"
-      end
-
-      local name = fn.bufname(bufhandle)
-
-      if #name == 0 then
-        name = "[No Name]"
-      end
-
-      -- for Terminal buffer, cleanup name
-      if api.buf_get_option(bufhandle, "buftype") == "terminal" then
-        -- b:term_title comes from nvim, see 'terminal'
-        name = term.teal .. "Term: " ..
-          term.reset .. api.buf_get_var(bufhandle, "term_title")
-      end
-
-      local item_string = string.format("[%s] %s", term.teal .. tostring(bufhandle) .. additional_info .. term.reset, name)
-
-      table.insert(items, item_string)
-      -- table.insert(items, string.format("%s\t%s", bufhandle .. additional_info, name))
     end
 
     local lines = options.fzf(items, opts)
