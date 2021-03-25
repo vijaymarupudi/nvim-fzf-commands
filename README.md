@@ -32,7 +32,7 @@ noremap <leader>f <cmd>lua require("fzf-commands").files({ fzf = custom_fzf_func
 These are keys of `require("fzf-commands")`. For eg.:
 `require('fzf-commands').files()`
 
-`files()`: Open files in the current vim directory
+`files(options)`: Open files in the current vim directory
 
 * List files (using [`fd`](https://github.com/sharkdp/fd) if available,
   otherwise `find`)
@@ -44,29 +44,46 @@ These are keys of `require("fzf-commands")`. For eg.:
 
 ![](gifs/files.gif)
 
-`helptags()`: Open neovim help files
+`helptags(options)`: Open neovim help files
 
+* Can handle multiple files
 * Can open files in the same window, in a [vertical] split, or in a new
   tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
 
 ![](gifs/helptags.gif)
 
-`bufferpicker()`: Pick between buffers to switch to them or open in a
+`bufferpicker(options)`: Pick between buffers to switch to them or open in a
   split.
 
 * Preview the buffers
+* Can handle multiple buffers
 * Can open files in the same window, in a [vertical] split, or in a new
   tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
 
 ![](gifs/bufferpicker.gif)
 
 
-`manpicker()`: Open a manpage using nvim's `Man`.
+`manpicker(options)`: Open a manpage using nvim's `Man`.
 
 * Can open files in the same window, in a [vertical] split, or in a new
   tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
 
 ![](gifs/manpicker.gif)
+
+`rg(pattern, options)`: Search for a pattern using `rg` (ripgrep).
+
+* Can handle opening multiple search results
+* Can open files in the same window, in a [vertical] split, or in a new
+  tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
+
+  Example usage:
+
+  ```vim
+  command! -nargs=1 Rg call luaeval('require("fzf-commands").rg(_A)', <f-args>)
+  nnoremap <leader>r :<c-u>Rg<space>
+  ```
+
+![](gifs/rg.gif)
 
 ## Configuration
 
