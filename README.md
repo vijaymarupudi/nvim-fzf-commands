@@ -38,7 +38,7 @@ These are keys of `require("fzf-commands")`. For eg.:
   otherwise `find`)
 * Preview (using [`bat`](https://github.com/sharkdp/bat) if available,
   otherwise `head`)
-* Supports opening multi files
+* Supports opening multiple files
 * Can open files in the same window, in a [vertical] split, or in a new
   tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
 
@@ -46,7 +46,6 @@ These are keys of `require("fzf-commands")`. For eg.:
 
 `helptags(options)`: Open neovim help files
 
-* Can handle multiple files
 * Can open files in the same window, in a [vertical] split, or in a new
   tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
 
