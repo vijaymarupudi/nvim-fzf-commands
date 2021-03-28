@@ -33,9 +33,12 @@ return function(opts)
     end)
 
     local current_colorscheme = get_current_colorscheme()
+    local current_background = vim.o.background
     local choices = opts.fzf(get_colorschemes(), "--preview=" .. preview_function .. " --preview-window right:0") 
     if not choices then
+      vim.o.background = current_background
       vim.cmd("colorscheme " .. current_colorscheme)
+      vim.o.background = current_background
     else
       vim.cmd("colorscheme" .. choices[1])
     end
