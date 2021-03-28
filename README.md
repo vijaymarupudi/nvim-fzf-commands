@@ -84,7 +84,7 @@ These are keys of `require("fzf-commands")`. For eg.:
 
 ![](gifs/rg.gif)
 
-`colorschemes(pattern, options)`: Pick a vim colorscheme.
+`colorschemes(options)`: Pick a vim colorscheme.
 
 * Previews the colorscheme live as you navigate them.
 
