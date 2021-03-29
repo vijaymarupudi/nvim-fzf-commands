@@ -51,10 +51,24 @@ These are keys of `require("fzf-commands")`. For eg.:
 
 ![](gifs/helptags.gif)
 
+`bufferpicker2(options)`: Pick between buffers to switch to them or open
+  in a split.
+
+* Preview the buffers (with neovim syntax highlighting and cursor crosshairs!)
+* Can handle multiple buffers
+* Can open files in the same window, in a [vertical] split, or in a new
+  tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
+* Options:
+  * `options.height` (number): the height of the split
+  * `options.unloaded` (boolean): show unloaded buffers
+  * `options.unlisted` (boolean): show unlisted buffers
+  * `options.direction` (string: `"top"` / `"bottom"`): where to display
+    the split.
+
 `bufferpicker(options)`: Pick between buffers to switch to them or open in a
   split.
 
-* Preview the buffers
+* Preview the buffers (plaintext)
 * Can handle multiple buffers
 * Can open files in the same window, in a [vertical] split, or in a new
   tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
