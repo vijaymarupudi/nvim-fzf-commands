@@ -96,15 +96,28 @@ end
 -- this function changes the cursorline option, now althought it's a window
 -- local options, it still affects future buffers and window even after you
 -- close this one, see: https://github.com/neovim/neovim/issues/11525
+-- so.., you have to handle backups of buffer local settings and restore them
+-- afterwards
 local function make_preview_func(backups, preview_win)
+
   return function (args)
     local bufhandle = display_name_to_bufhandle(args[1])
 
     -- show stuff
     if api.buf_is_loaded(bufhandle) then
+      -- restore settings for the buffer we were previously viewing
+      local previous_buf = api.win_get_buf(preview_win)
+      if backups[previous_buf] then
+        api.win_set_option(preview_win, "cursorline", backups[previous_buf][1])
+        api.win_set_option(preview_win, "cursorcolumn", backups[previous_buf][2])
+        backups[previous_buf] = nil -- taken care of
+      end
       api.win_set_buf(preview_win, bufhandle)
       if not backups[bufhandle] then
-        backups[bufhandle] = {api.win_get_option(preview_win, "cursorline"), api.win_get_option(preview_win, "cursorcolumn")}
+        backups[bufhandle] = {
+          api.win_get_option(preview_win, "cursorline"),
+          api.win_get_option(preview_win, "cursorcolumn")
+        }
       end
       crosshairs(preview_win, true)
     else
@@ -160,10 +173,10 @@ return function(options)
     api.buf_set_option(0, "buflisted", false)
     vim.cmd [[setlocal statusline=\ >\ Buffers]]
 
-    -- for cursorline and cursorcolumn
+    -- these are {cursorline, cursorcolumn} backups
     local backups = {}
 
-    -- preview action, backups are IMPORTANT for respecting user settings
+    -- preview action
     local preview = action(make_preview_func(backups, preview_win))
 
     local choices = raw_fzf(get_display_names(options), "--ansi " ..
@@ -174,11 +187,14 @@ return function(options)
 
     vim.cmd "bw!"
     api.set_current_win(preview_win)
-    -- restore cursorcolumn backups
+
+    -- restore cursorcolumn backups for those that weren't restored (usually
+      -- the last previewed loaded buffer)
     for bufhandle, backup in pairs(backups) do
       vim.cmd("b " .. bufhandle)
       api.win_set_option(0, "cursorline", backup[1])
       api.win_set_option(0, "cursorcolumn", backup[2])
+      backups[bufhandle] = nil -- taken care of
     end
     api.win_close(preview_win, false) -- close the preview window
 
