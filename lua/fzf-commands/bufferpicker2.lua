@@ -87,6 +87,52 @@ end
 -- for previews of unloaded buffers
 local has_bat = fn.executable("bat") ~= 0
 
+local function crosshairs(win, state)
+  api.win_set_option(win, "cursorcolumn", state)
+  api.win_set_option(win, "cursorline", state)
+end
+
+
+-- this function changes the cursorline option, now althought it's a window
+-- local options, it still affects future buffers and window even after you
+-- close this one, see: https://github.com/neovim/neovim/issues/11525
+local function make_preview_func(backups, preview_win)
+  return function (args)
+    local bufhandle = display_name_to_bufhandle(args[1])
+
+    -- show stuff
+    if api.buf_is_loaded(bufhandle) then
+      api.win_set_buf(preview_win, bufhandle)
+      if not backups[bufhandle] then
+        backups[bufhandle] = {api.win_get_option(preview_win, "cursorline"), api.win_get_option(preview_win, "cursorcolumn")}
+      end
+      crosshairs(preview_win, true)
+    else
+      -- stuff that neovim doesn't currently know about
+      local tmp_buf = api.create_buf(false, true)
+      api.buf_set_option(tmp_buf, 'bufhidden', 'wipe')
+      api.win_set_buf(preview_win, tmp_buf)
+      local filename = api.buf_get_name(bufhandle)
+      if #filename ~= 0 and vim.fn.filereadable(filename) ~= 0 then
+        if has_bat then
+          win_run_shell(preview_win, "bat --color always -pp " .. 
+            "--line-range :" .. tostring(api.win_get_height(preview_win)) .. " " .. 
+            vim.fn.shellescape(filename))
+        else
+          -- minus one for statusbar height
+          win_run_shell("head " .. 
+            "--lines=" .. tostring(api.win_get_height(preview_win) - 1) .. " " ..
+            vim.fn.shellescape(filename))
+        end
+      else
+        api.buf_set_text(tmp_buf, 0, 0, 0, 0, {"UNLOADED BUFFER"})
+      end
+      crosshairs(preview_win, false)
+    end
+  end
+end
+
+
 return function(options)
 
   -- options support keys 'direction', 'unlisted', 'unloaded', and 'height'
@@ -114,36 +160,11 @@ return function(options)
     api.buf_set_option(0, "buflisted", false)
     vim.cmd [[setlocal statusline=\ >\ Buffers]]
 
+    -- for cursorline and cursorcolumn
+    local backups = {}
 
-    -- preview action
-    local preview = action(function (args)
-      local bufhandle = display_name_to_bufhandle(args[1])
-
-      -- show stuff
-      if api.buf_is_loaded(bufhandle) then
-        api.win_set_buf(preview_win, bufhandle)
-      else
-        local tmp_buf = api.create_buf(false, true)
-        api.buf_set_option(tmp_buf, 'bufhidden', 'wipe')
-        api.win_set_buf(preview_win, tmp_buf)
-        local filename = api.buf_get_name(bufhandle)
-        if #filename ~= 0 and vim.fn.filereadable(filename) ~= 0 then
-          if has_bat then
-            win_run_shell(preview_win, "bat --color always -pp " .. 
-              "--line-range :" .. tostring(api.win_get_height(preview_win)) .. " " .. 
-              vim.fn.shellescape(filename))
-          else
-            -- minus one for statusbar height
-            win_run_shell("head " .. 
-              "--lines=" .. tostring(api.win_get_height(preview_win) - 1) .. " " ..
-              vim.fn.shellescape(filename))
-          end
-        else
-          api.buf_set_text(tmp_buf, 0, 0, 0, 0, {"UNLOADED BUFFER"})
-        end
-      end
-
-    end)
+    -- preview action, backups are IMPORTANT for respecting user settings
+    local preview = action(make_preview_func(backups, preview_win))
 
     local choices = raw_fzf(get_display_names(options), "--ansi " ..
       "--preview=" .. preview .. " " ..
@@ -151,13 +172,18 @@ return function(options)
       "--expect=ctrl-s,ctrl-t,ctrl-v " ..
       "--multi")    
 
+    vim.cmd "bw!"
+    api.set_current_win(preview_win)
+    -- restore cursorcolumn backups
+    for bufhandle, backup in pairs(backups) do
+      vim.cmd("b " .. bufhandle)
+      api.win_set_option(0, "cursorline", backup[1])
+      api.win_set_option(0, "cursorcolumn", backup[2])
+    end
     api.win_close(preview_win, false) -- close the preview window
-    local fzf_buf = api.win_get_buf(fzf_win)
-    -- doing this instead of :bw! because it don't want the new buffer to
-    -- inherit the minimal style of the fzf and preview buffer
-    api.win_close(fzf_win, false)
-    api.buf_delete(fzf_buf, { force = true })
+
     api.set_current_win(orig_win)
+
 
     if not choices then
       return
@@ -182,5 +208,6 @@ return function(options)
         vim.cmd("b " .. buffer_num_str)
       end
     end
+
   end)()
 end
