@@ -155,11 +155,16 @@ return function(options)
 
     local orig_win = api.get_current_win()
 
+
+    -- empty preview buffer to prevent flashing
+    local empty_preview_buffer = api.create_buf(false, true)
+    api.buf_set_option(empty_preview_buffer, "bufhidden", "wipe")
+
     -- preview win
     if options.direction == "top" then
-      vim.cmd "topleft sp"
+      vim.cmd("topleft sbuffer " .. tostring(empty_preview_buffer))
     else
-      vim.cmd "botright sp"
+      vim.cmd("botright sbuffer " .. tostring(empty_preview_buffer))
     end
 
     local preview_win = api.get_current_win()
