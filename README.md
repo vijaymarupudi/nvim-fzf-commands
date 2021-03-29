@@ -64,6 +64,10 @@ These are keys of `require("fzf-commands")`. For eg.:
   * `options.unlisted` (boolean): show unlisted buffers
   * `options.direction` (string: `"top"` / `"bottom"`): where to display
     the split.
+  * does **not** take `options.fzf`, because this function opens two
+    windows, one for fzf, one for the preview.
+
+![](gifs/bufferpicker2.gif)
 
 `bufferpicker(options)`: Pick between buffers to switch to them or open in a
   split.
