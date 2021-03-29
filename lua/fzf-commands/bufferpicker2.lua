@@ -83,6 +83,10 @@ local function win_run_shell(win, shell)
 
 end
 
+
+-- for previews of unloaded buffers
+local has_bat = fn.executable("bat") ~= 0
+
 return function(options)
 
   -- options support keys 'direction', 'unlisted', 'unloaded', and 'height'
@@ -90,8 +94,7 @@ return function(options)
 
     if not options then options = {} end
 
-    -- for previews of unloaded buffers
-    local has_bat = fn.executable("bat") ~= 0
+    local orig_win = api.get_current_win()
 
     -- preview win
     if options.direction == "top" then
@@ -154,6 +157,7 @@ return function(options)
     -- inherit the minimal style of the fzf and preview buffer
     api.win_close(fzf_win, false)
     api.buf_delete(fzf_buf, { force = true })
+    api.set_current_win(orig_win)
 
     if not choices then
       return
