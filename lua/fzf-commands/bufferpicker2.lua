@@ -105,18 +105,11 @@ return function(options)
       api.win_set_height(preview_win, options.height)
     end
 
-    -- remove cruft
-    api.win_set_option(preview_win, "number", false)
-    api.win_set_option(preview_win, "signcolumn", "no")
-
-
     -- fzf win
     vim.cmd 'vnew'
-    vim.cmd [[setlocal nobuflisted]]
-    vim.cmd [[setlocal nonumber]]
-    vim.cmd [[setlocal signcolumn=no]]
-    vim.cmd [[setlocal statusline=\ >\ Buffers]]
     local fzf_win = api.get_current_win()
+    api.buf_set_option(0, "buflisted", false)
+    vim.cmd [[setlocal statusline=\ >\ Buffers]]
 
 
     -- preview action
@@ -125,15 +118,8 @@ return function(options)
 
       -- show stuff
       if api.buf_is_loaded(bufhandle) then
-        -- in this case, show where the cursor is
-        api.win_set_option(preview_win, "cursorcolumn", true)
-        api.win_set_option(preview_win, "cursorline", true)
         api.win_set_buf(preview_win, bufhandle)
       else
-        -- in this case, there is no existing cursor, so turn
-        -- these off
-        api.win_set_option(preview_win, "cursorcolumn", false)
-        api.win_set_option(preview_win, "cursorline", false)
         local tmp_buf = api.create_buf(false, true)
         api.buf_set_option(tmp_buf, 'bufhidden', 'wipe')
         api.win_set_buf(preview_win, tmp_buf)

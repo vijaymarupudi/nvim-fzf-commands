@@ -54,7 +54,7 @@ These are keys of `require("fzf-commands")`. For eg.:
 `bufferpicker2(options)`: Pick between buffers to switch to them or open
   in a split.
 
-* Preview the buffers (with neovim syntax highlighting and cursor crosshairs!)
+* Preview the buffers (with neovim syntax highlighting!)
 * Can handle multiple buffers
 * Can open files in the same window, in a [vertical] split, or in a new
   tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
