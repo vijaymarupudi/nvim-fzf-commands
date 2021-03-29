@@ -70,8 +70,13 @@ local function win_run_shell(win, shell)
   local term_chan = api.open_term(buf, {})
 
   fn.jobstart(shell, { on_stdout = function(chan, data, name)
-    for _, v in ipairs(data) do
-      api.chan_send(term_chan, v .. "\r\n")
+    -- IMPORTANT: this condition prevents a race condition when
+    -- the user has navigated away from the listing, but the
+    -- preview command has not run yet
+    if api.win_get_buf(win) == buf then
+      for _, v in ipairs(data) do
+        api.chan_send(term_chan, v .. "\r\n")
+      end
     end
   end,
   stdout_buffered = true})
@@ -101,8 +106,6 @@ return function(options)
     end
 
     -- remove cruft
-    api.win_set_option(preview_win, "cursorcolumn", true)
-    api.win_set_option(preview_win, "cursorline", true)
     api.win_set_option(preview_win, "number", false)
     api.win_set_option(preview_win, "signcolumn", "no")
 
@@ -122,8 +125,15 @@ return function(options)
 
       -- show stuff
       if api.buf_is_loaded(bufhandle) then
+        -- in this case, show where the cursor is
+        api.win_set_option(preview_win, "cursorcolumn", true)
+        api.win_set_option(preview_win, "cursorline", true)
         api.win_set_buf(preview_win, bufhandle)
       else
+        -- in this case, there is no existing cursor, so turn
+        -- these off
+        api.win_set_option(preview_win, "cursorcolumn", false)
+        api.win_set_option(preview_win, "cursorline", false)
         local tmp_buf = api.create_buf(false, true)
         api.buf_set_option(tmp_buf, 'bufhidden', 'wipe')
         api.win_set_buf(preview_win, tmp_buf)
