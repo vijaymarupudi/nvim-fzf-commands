@@ -7,10 +7,18 @@ This is a work in progress, contributions welcome!
 
 ## Table of contents
 
+* [Installation](#installation)
 * [Usage](#usage)
 * [Commands](#commands)
 * [Configuration](#configuration)
 * [Contribution notes](#contribution-notes)
+
+## Installation
+
+```vim
+Plug 'vijaymarupudi/nvim-fzf' " requires the nvim-fzf library
+Plug 'vijaymarupudi/nvim-fzf-commands'
+```
 
 ## Usage
 
