@@ -24,6 +24,10 @@ local function files(opts)
     preview = "head -n $FZF_PREVIEW_LINES -- {}"
   end
 
+  -- We use bash to do math on the environment variable, so
+  -- let's make sure this command runs in bash
+  preview = "bash -c " .. fn.shellescape(preview)
+
   coroutine.wrap(function ()
     local choices = opts.fzf(command,
       ("--ansi --preview=%s --expect=ctrl-s,ctrl-t,ctrl-v --multi"):format(
