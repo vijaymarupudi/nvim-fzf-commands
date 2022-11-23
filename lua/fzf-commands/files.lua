@@ -19,7 +19,7 @@ local function files(opts)
   if fn.executable("bat") == 1 then
     -- 5 is the number that prevents overflow of the preview window when using
     -- bat
-    preview = "bat --line-range=:$(($FZF_PREVIEW_LINES - 5)) --color always -- \"$0\""
+    preview = ('bash -c %s "$0"'):format(fn.shellescape('bat --line-range=:$(($FZF_PREVIEW_LINES - 5)) --color always -- "$0"'))
   else
     preview = "head -n $FZF_PREVIEW_LINES -- \"$0\""
   end
