@@ -7,12 +7,24 @@ local fn, api = utils.helpers()
 local function files(opts)
 
   opts = utils.normalize_opts(opts)
-  local command
+  local executable
   if fn.executable("fd") == 1 then
-    command = "fd --color always -t f -L" 
+     executable = "fd"
   else
-    -- tail to get rid of current directory from the results
-    command = "find . -type f -printf '%P\n' | tail +2"
+     -- tail to get rid of current directory from the results
+     executable = "find"
+  end
+
+  local command = executable
+
+  if opts.command_flags then
+     command = command .. " " .. opts.command_flags
+  else
+     if executable == "fd" then
+        command = command .. " --color always -t f -L"
+     else
+        command = command .. " . -type f -printf '%P\n' | tail +2"
+     end
   end
 
   local preview
@@ -49,9 +61,8 @@ local function files(opts)
     for i=2,#choices do
       vim.cmd(vimcmd .. " " .. fn.fnameescape(choices[i]))
     end
-    
+
   end)()
 end
 
 return files
-

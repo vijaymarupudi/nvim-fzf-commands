@@ -49,6 +49,10 @@ These are keys of `require("fzf-commands")`. For eg.:
 * Supports opening multiple files
 * Can open files in the same window, in a [vertical] split, or in a new
   tab (`enter`, `ctrl-s`, `ctrl-v`, `ctrl-t`).
+* Options:
+  * `options.command_flags` (string): Provide custom flags to `find` or `fd`.
+    The default flags are not passed to the commands if this option is
+    provided.
 
 ![](gifs/files.gif)
 
